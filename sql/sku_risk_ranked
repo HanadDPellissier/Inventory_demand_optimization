@@ -1,0 +1,22 @@
+-- Adds rankings so teams can prioritize what to review first
+CREATE OR REPLACE VIEW sku_risk_ranked AS
+SELECT
+    s.*,
+
+    -- Overall priority rankings across all SKUs
+    ROW_NUMBER() OVER (ORDER BY "Demand CV" DESC) AS "Overall Volatility Rank",
+    ROW_NUMBER() OVER (ORDER BY "Days Inventory On Hand" ASC) AS "Overall Lean Inventory Rank",
+
+    -- Rank within each risk tier (so you can pull "Top High Risk" easily)
+    ROW_NUMBER() OVER (
+        PARTITION BY "Risk Tier"
+        ORDER BY "Demand CV" DESC
+    ) AS "Volatility Rank Within Tier",
+
+    -- Composite “review priority” inside the High tier: highest volatility + lowest buffer first
+    ROW_NUMBER() OVER (
+        PARTITION BY "Risk Tier"
+        ORDER BY "Demand CV" DESC, "Days Inventory On Hand" ASC
+    ) AS "Review Priority Within Tier"
+
+FROM sku_risk_scored s;

@@ -1,0 +1,40 @@
+-- Diagnostic: compare operational drivers by Risk Tier
+WITH daily AS (
+  SELECT
+    ("Store ID" || '_' || "Product ID") AS "SKU",
+    -- Explicit numeric casts
+    CAST("Discount" AS numeric) AS "Discount",
+    CAST("Holiday/Promotion" AS numeric) AS "Holiday_Promo",
+    CAST("Competitor Pricing" AS numeric) AS "Competitor_Pricing",
+    CAST("Price" AS numeric) AS "Price",
+    "Units Sold",
+    "Weather Condition"
+  FROM inventory_clean
+),
+sku_driver_summary AS (
+  SELECT
+    "SKU",
+    AVG("Discount") AS avg_discount,
+    AVG("Holiday_Promo") AS promo_rate,
+    AVG("Competitor_Pricing") AS avg_competitor_price,
+    AVG("Price") AS avg_price,
+    STDDEV("Discount") AS discount_volatility,
+    COUNT(DISTINCT "Weather Condition") AS weather_variety
+  FROM daily
+  GROUP BY "SKU"
+)
+SELECT
+  r."Risk Tier",
+  COUNT(*) AS sku_count,
+  ROUND(AVG(s.avg_discount)::numeric, 2) AS avg_discount,
+  ROUND(AVG(s.promo_rate)::numeric, 3) AS avg_promo_rate,
+  ROUND(AVG(s.avg_price)::numeric, 2) AS avg_price,
+  ROUND(AVG(s.avg_competitor_price)::numeric, 2) AS avg_comp_price,
+  ROUND(AVG(s.discount_volatility)::numeric, 2) AS avg_discount_volatility,
+  ROUND(AVG(s.weather_variety)::numeric, 2) AS avg_weather_variety
+FROM sku_risk_scored r
+JOIN sku_driver_summary s
+  ON r."SKU" = s."SKU"
+GROUP BY r."Risk Tier"
+ORDER BY
+  CASE r."Risk Tier" WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END;

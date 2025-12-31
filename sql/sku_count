@@ -1,0 +1,4 @@
+SELECT "Risk Tier", COUNT(*) AS sku_count
+FROM sku_risk_scored
+GROUP BY "Risk Tier"
+ORDER BY sku_count DESC;

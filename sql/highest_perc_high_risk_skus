@@ -1,0 +1,34 @@
+-- Diagnostic: risk share within each Category
+WITH sku_dim AS (
+  SELECT DISTINCT
+    ("Store ID" || '_' || "Product ID") AS "SKU",
+    "Category"
+  FROM inventory_clean
+),
+counts AS (
+  SELECT
+    d."Category",
+    r."Risk Tier",
+    COUNT(*) AS sku_count
+  FROM sku_risk_scored r
+  JOIN sku_dim d ON r."SKU" = d."SKU"
+  GROUP BY d."Category", r."Risk Tier"
+),
+totals AS (
+  SELECT
+    "Category",
+    SUM(sku_count) AS category_total
+  FROM counts
+  GROUP BY "Category"
+)
+SELECT
+  c."Category",
+  c."Risk Tier",
+  c.sku_count,
+  t.category_total,
+  ROUND((c.sku_count::numeric / NULLIF(t.category_total, 0)) * 100, 2) AS pct_of_category
+FROM counts c
+JOIN totals t USING ("Category")
+ORDER BY
+  c."Category",
+  CASE c."Risk Tier" WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END;

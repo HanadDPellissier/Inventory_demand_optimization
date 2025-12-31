@@ -1,0 +1,45 @@
+-- SKU-level risk scoring view (metrics + tiers)
+CREATE OR REPLACE VIEW sku_risk_scored AS
+WITH sku_base AS (
+    -- Aggregate daily rows into one row per SKU
+    SELECT
+        ("Store ID" || '_' || "Product ID") AS "SKU",
+        AVG("Units Sold") AS "Avg Daily Demand",
+        STDDEV("Units Sold") AS "Demand Std Dev",
+        AVG("Inventory Level") AS "Avg Inventory Level"
+    FROM inventory_clean
+    GROUP BY ("Store ID" || '_' || "Product ID")
+),
+sku_metrics AS (
+    -- Compute variability + buffer metrics used for grading
+    SELECT
+        "SKU",
+        "Avg Daily Demand",
+        "Demand Std Dev",
+        ("Demand Std Dev" / NULLIF("Avg Daily Demand", 0)) AS "Demand CV",
+        ("Avg Inventory Level" / NULLIF("Avg Daily Demand", 0)) AS "Days Inventory On Hand"
+    FROM sku_base
+),
+tiered AS (
+    -- Use window functions to create percentile-based tiers (quartiles + halves)
+    SELECT
+        *,
+        NTILE(4) OVER (ORDER BY "Demand CV") AS "CV Quartile",
+        NTILE(4) OVER (ORDER BY "Days Inventory On Hand") AS "DOH Quartile",
+        NTILE(2) OVER (ORDER BY "Days Inventory On Hand") AS "DOH Half"
+    FROM sku_metrics
+)
+SELECT
+    "SKU",
+    "Avg Daily Demand",
+    "Demand Std Dev",
+    "Demand CV",
+    "Days Inventory On Hand",
+    "CV Quartile",
+    "DOH Quartile",
+    CASE
+        WHEN "CV Quartile" = 4 AND "DOH Half" = 1 THEN 'High'
+        WHEN "CV Quartile" = 1 OR "DOH Quartile" = 4 THEN 'Low'
+        ELSE 'Medium'
+    END AS "Risk Tier"
+FROM tiered;

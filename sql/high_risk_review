@@ -1,0 +1,5 @@
+SELECT *
+FROM sku_risk_ranked
+WHERE "Risk Tier" = 'High'
+ORDER BY "Review Priority Within Tier"
+LIMIT 10;

@@ -1,0 +1,13 @@
+CREATE VIEW sku_driver_metrics AS
+SELECT
+  ("Store ID" || '_' || "Product ID") AS "SKU",
+
+  AVG(CAST("Discount" AS numeric)) AS avg_discount,
+  AVG(CAST("Holiday/Promotion" AS numeric)) AS promo_rate,
+  AVG(CAST("Price" AS numeric)) AS avg_price,
+
+  STDDEV(CAST("Discount" AS numeric)) AS discount_volatility,
+  AVG(CAST("Competitor Pricing" AS numeric)) AS avg_competitor_price
+
+FROM inventory_clean
+GROUP BY 1;

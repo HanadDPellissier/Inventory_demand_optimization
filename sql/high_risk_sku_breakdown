@@ -1,0 +1,41 @@
+-- Diagnostic: detailed driver breakdown for High-risk SKUs
+WITH daily AS (
+  SELECT
+    ("Store ID" || '_' || "Product ID") AS "SKU",
+    "Category",
+    "Region",
+    CAST("Discount" AS numeric) AS "Discount",
+    CAST("Holiday/Promotion" AS numeric) AS "Holiday_Promo",
+    CAST("Competitor Pricing" AS numeric) AS "Competitor_Pricing",
+    CAST("Price" AS numeric) AS "Price"
+  FROM inventory_clean
+),
+sku_driver_summary AS (
+  SELECT
+    "SKU",
+    MIN("Category") AS "Category",
+    MIN("Region") AS "Region",
+    AVG("Discount") AS avg_discount,
+    STDDEV("Discount") AS discount_volatility,
+    AVG("Holiday_Promo") AS promo_rate,
+    AVG("Price") AS avg_price,
+    AVG("Competitor_Pricing") AS avg_competitor_price
+  FROM daily
+  GROUP BY "SKU"
+)
+SELECT
+  r."SKU",
+  d."Category",
+  d."Region",
+  ROUND(r."Demand CV"::numeric, 4) AS demand_cv,
+  ROUND(r."Days Inventory On Hand"::numeric, 4) AS days_on_hand,
+  ROUND(d.avg_discount::numeric, 2) AS avg_discount,
+  ROUND(d.discount_volatility::numeric, 2) AS discount_volatility,
+  ROUND(d.promo_rate::numeric, 3) AS promo_rate,
+  ROUND(d.avg_price::numeric, 2) AS avg_price,
+  ROUND(d.avg_competitor_price::numeric, 2) AS avg_comp_price
+FROM sku_risk_scored r
+JOIN sku_driver_summary d
+  ON r."SKU" = d."SKU"
+WHERE r."Risk Tier" = 'High'
+ORDER BY r."Demand CV" DESC, r."Days Inventory On Hand" ASC;

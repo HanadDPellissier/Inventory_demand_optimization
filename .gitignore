@@ -1,0 +1,22 @@
+# Python virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+.ipynb_checkpoints/
+
+# Data files
+data/raw/
+data/cleaned/
+*.csv
+
+# BI exports
+*.xlsx
+*.xls
+*.pdf
+*.hyper
+*.twbx
+
+# OS files
+.DS_Store

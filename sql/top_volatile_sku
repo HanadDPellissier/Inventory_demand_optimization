@@ -1,0 +1,4 @@
+SELECT "SKU", "Demand CV", "Days Inventory On Hand", "Risk Tier", "Overall Volatility Rank"
+FROM sku_risk_ranked
+ORDER BY "Overall Volatility Rank"
+LIMIT 10;
