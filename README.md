@@ -64,7 +64,7 @@ Identify where risk exists and how demand volatility behaves across SKU risk tie
 
 ### Dashboard Overview
 
-![Dashboard 1 – SKU Risk Tier Volatility Analysis](Inventory_demand_optimization/tableau/Dashboard_1.png)
+![Dashboard 1 – SKU Risk Tier Volatility Analysis](tableau/Dashboard_1.png)
 
 ### Key Visuals and Insights
 
@@ -97,7 +97,7 @@ Translate risk insights into **clear, actionable review decisions**.
 
 ### Dashboard Overview
 
-![Dashboard 2 – SKU Review Prioritization & Volatility Contribution](Inventory_demand_optimization/tableau/Dashboard_2.png)
+![Dashboard 2 – SKU Review Prioritization & Volatility Contribution](tableau/Dashboard_2.png)
 
 ### Key Visuals and Insights
 
