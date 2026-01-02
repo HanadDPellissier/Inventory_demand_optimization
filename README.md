@@ -62,6 +62,10 @@ This framework allows teams to focus on SKUs that **actually drive operational r
 **Purpose:**  
 Identify where risk exists and how demand volatility behaves across SKU risk tiers.
 
+### Dashboard Overview
+
+![Dashboard 1 – SKU Risk Tier Volatility Analysis](Inventory_demand_optimization/tableau/Dashboard_1.png)
+
 ### Key Visuals and Insights
 
 #### SKU Risk Prioritization Map
@@ -90,6 +94,10 @@ Identify where risk exists and how demand volatility behaves across SKU risk tie
 
 **Purpose:**  
 Translate risk insights into **clear, actionable review decisions**.
+
+### Dashboard Overview
+
+![Dashboard 2 – SKU Review Prioritization & Volatility Contribution](Inventory_demand_optimization/tableau/Dashboard_2.png)
 
 ### Key Visuals and Insights
 
@@ -176,8 +184,8 @@ With this framework:
 - A small subset of SKUs drives the majority of demand volatility
 - Pricing and promotions are not the primary drivers of instability
 - Risk-aware prioritization significantly reduces review overhead
-- Demand volatility is highly concentrated in a small subset of High-risk SKUs, enabling targeted intervention rather than broad inventory changes.
-- Low-risk SKUs account for the majority of inventory but contribute disproportionately less volatility, suggesting current inventory buffers are sufficient.
+- Demand volatility is highly concentrated in a small subset of high-risk SKUs
+- Low-risk SKUs contribute disproportionately less volatility
 - Focused SKU reviews improve operational efficiency and decision quality
 
 ---
